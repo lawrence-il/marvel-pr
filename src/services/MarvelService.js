@@ -2,7 +2,9 @@
 class MarvelService {
     _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     _apiKey = 'apikey=e913ae028659ec126c204a2ab5b09eea';
-    _notFound = 'https://www.marvel.com/universe/404';
+    _notFoundUrl = 'https://www.marvel.com/universe/404';
+
+    
 
     getResource = async (url) => {
         let res = await fetch(url);
@@ -26,8 +28,8 @@ class MarvelService {
                 name: char.name,
                 description: char.description,
                 thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
-                homepage: char.urls.filter(item => item.type === 'detail')[0] ? char.urls.filter(item => item.type === 'detail')[0].url : this._notFound,
-                wiki: char.urls.filter(item => item.type === 'wiki')[0] ? char.urls.filter(item => item.type === 'wiki')[0].url : this._notFound,
+                homepage: char.urls.filter(item => item.type === 'detail')[0] ? char.urls.filter(item => item.type === 'detail')[0].url : this._notFoundUrl,
+                wiki: char.urls.filter(item => item.type === 'wiki')[0] ? char.urls.filter(item => item.type === 'wiki')[0].url : this._notFoundUrl,
             })
         }
     }

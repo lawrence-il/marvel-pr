@@ -6,15 +6,14 @@ import MarvelService from '../../services/MarvelService';
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
+
 class RandomChar extends Component {
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
+
     state = { // поля классов, просто опускаем зис
         char: {},
         loading: true,
         error: false,
+        imgNotFound: 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
     }
 
     marvelService = new MarvelService();
@@ -50,13 +49,17 @@ class RandomChar extends Component {
 
     }
 
+    componentDidMount() {
+        this.updateChar();
+    }
 
     render () {
-        const {char, loading, error} = this.state;
+        const {char, loading, error, imgNotFound} = this.state;
+
         const errorMessage = error ? <ErrorMessage/> : false;
         const spinner = loading ? <Spinner/> : false
-        const content = !(loading || error) ? <View char={char}/> : false
-
+        const content = !(loading || error) ? <View char={char} imgNotFound={imgNotFound}/> : false
+        
         return (
             <div className="randomchar">
                 {errorMessage}
@@ -80,12 +83,11 @@ class RandomChar extends Component {
     }
 }
 
-const View = ({char}) => {
+const View = ({char, imgNotFound}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
-
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <img src={thumbnail} alt="Random character" style={thumbnail === imgNotFound ? {objectFit: 'contain'} : {}} className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
