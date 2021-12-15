@@ -25,7 +25,7 @@ class RandomChar extends Component {
         } else if (!char.description) {
             char.description = 'DESCRIPTION NOT FOUND';
         }
-         
+
         this.setState({
             char,
             loading: false,
@@ -57,13 +57,9 @@ class RandomChar extends Component {
         this.updateChar();
     }
 
-    componentDidUpdate() {
-        console.log('update')
-    }
-
     render () {
-        const {char, loading, error, imgNotFound} = this.state;
 
+        const {char, loading, error, imgNotFound} = this.state;
         const errorMessage = error ? <ErrorMessage/> : false;
         const spinner = loading ? <Spinner/> : false
         const content = !(loading || error) ? <View char={char} imgNotFound={imgNotFound}/> : false
@@ -95,7 +91,7 @@ const View = ({char, imgNotFound}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" style={thumbnail === imgNotFound ? {objectFit: 'contain'} : {}} className="randomchar__img"/>
+            <img src={thumbnail} alt="Random character" style={thumbnail === imgNotFound ? {objectFit: 'fill'} : {}} className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
