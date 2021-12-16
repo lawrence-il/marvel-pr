@@ -24,6 +24,13 @@ class MarvelService {
     }
 
     _transformCharacter = (char) => { // берутся необходимые данные 
+        
+        if(char.description.length >= 170) {
+            char.description = `${char.description.slice(0, 170)}...`
+        } else if (!char.description) {
+            char.description = 'Description not found with this character';
+        }
+    
         return ({
                 id: char.id,
                 name: char.name,
@@ -31,9 +38,10 @@ class MarvelService {
                 thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
                 homepage: char.urls.filter(item => item.type === 'detail')[0] ? char.urls.filter(item => item.type === 'detail')[0].url : this._notFoundUrl,
                 wiki: char.urls.filter(item => item.type === 'wiki')[0] ? char.urls.filter(item => item.type === 'wiki')[0].url : this._notFoundUrl,
+                comics: char.comics.items
             })
         }
     }
 
-
+    
 export default MarvelService;

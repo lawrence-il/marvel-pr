@@ -2,7 +2,6 @@ import { Component } from 'react/cjs/react.production.min';
 import Spinner from '../spinner/Spinner';
 import MarvelService from '../../services/MarvelService';
 import './charList.scss';
-import { Fragment } from 'react';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 
@@ -17,24 +16,34 @@ class CharList extends Component {
 
     marvelService = new MarvelService();
     
+    onError = () => {
+        this.setState({
+            loading: false,
+            error: true,
+        });
+
+    }
+
     updateList = () => {
         this.marvelService
             .getAllCharacters()
-            .then(this.onElements);
+            .then(this.createElements)
+            .catch(this.onError);
     }
 
     componentDidMount = () => {
         this.updateList()
     }
 
-    onElements = (data) => {
+    createElements = (data) => {
         const listChar = data.map(({id, thumbnail, name}) => (
-            <Fragment key={id}>
-                    <li className="char__item">
-                        <img src={thumbnail} alt={name} style={thumbnail === this.state.imgNotFound ? {objectFit: 'fill'} : {}}/>
-                        <div className="char__name">{name}</div>
+                    <li key={id} 
+                        className="char__item"
+                        onClick={() => this.props.onCharSelected(id)}>
+                            <img src={thumbnail} alt={name} style={thumbnail === this.state.imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}}/>
+                            <div className="char__name">{name}</div>
                     </li>   
-            </Fragment>
+
         ))
         this.setState(() => ({
             list: listChar,

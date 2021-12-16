@@ -20,12 +20,6 @@ class RandomChar extends Component {
 
     onCharLoaded = (char) => {
 
-        if(char.description.length >= 170) {
-            char.description = `${char.description.slice(0, 170)}...`
-        } else if (!char.description) {
-            char.description = 'DESCRIPTION NOT FOUND';
-        }
-
         this.setState({
             char,
             loading: false,
@@ -91,7 +85,7 @@ const View = ({char, imgNotFound}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" style={thumbnail === imgNotFound ? {objectFit: 'fill'} : {}} className="randomchar__img"/>
+            <img src={thumbnail} alt="Random character" style={thumbnail === imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}} className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
