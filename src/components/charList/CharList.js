@@ -8,10 +8,13 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 class CharList extends Component {
 
     state = {
-        list: '',
+        list: [],
         loading: true,
         error: false,
-        imgNotFound: 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+        imgNotFound: 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg',
+        newItemLoading: false,
+        offset: 210,
+        charEnded: false
     }
 
     marvelService = new MarvelService();
@@ -24,36 +27,55 @@ class CharList extends Component {
 
     }
 
-    updateList = () => {
-        this.marvelService
-            .getAllCharacters()
-            .then(this.createElements)
-            .catch(this.onError);
-    }
 
     componentDidMount = () => {
-        this.updateList()
+        this.onRequest();
+    }
+
+    onRequest = (offset, limit) => {
+        this.onCharListLoading();
+        this.marvelService
+            .getAllCharacters(offset, limit)
+            .then(this.createElements)
+            .catch(this.onError);    
+    }
+
+    onCharListLoading = () => {
+        this.setState({
+            newItemLoading: true
+        })
     }
 
     createElements = (data) => {
-        const listChar = data.map(({id, thumbnail, name}) => (
-                    <li key={id} 
-                        className="char__item"
-                        onClick={() => this.props.onCharSelected(id)}>
-                            <img src={thumbnail} alt={name} style={thumbnail === this.state.imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}}/>
-                            <div className="char__name">{name}</div>
-                    </li>   
+        let ended = false;
+        let newListChar = [];
 
-        ))
-        this.setState(() => ({
-            list: listChar,
+        if (data.length < 9) {
+            ended = true;
+
+        } else {
+            newListChar = data.map(({id, thumbnail, name}) => (
+                <li key={id}
+                    className="char__item"
+                    onClick={() => this.props.onCharSelected(id)}>
+                        <img src={thumbnail} alt={name} style={thumbnail === this.state.imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}}/>
+                        <div className="char__name">{name}</div>
+                </li>   
+            ))
+        }
+        
+        this.setState(({list, offset}) => ({
+            list: [...list, ...newListChar],
             loading: false,
+            newItemLoading: false,
+            offset: offset + 9,
+            charEnded: ended,
         }))
     }
 
     render () {
 
-        const {list, error, loading} = this.state;
+        const {list, error, loading, newItemLoading, offset, charEnded} = this.state;
         const errorMessage = error ? <ErrorMessage/> : false;
         const spinner = loading ? <Spinner/> : false;
         const showList = !(loading || error) ? list : false;
@@ -65,7 +87,12 @@ class CharList extends Component {
                 <ul className="char__grid">
                     {showList}
                 </ul>
-                <button className="button button__main button__long">
+                <button 
+                    className="button button__main button__long"
+                    disabled={newItemLoading}
+                    style={{'display': charEnded ? 'none' : 'block'}}
+                    onClick={() => this.onRequest(offset)}
+                    >
                     <div className="inner">load more</div>
                 </button>
             </div>
