@@ -123,7 +123,7 @@ const View = ({char, imgNotFound}) => {
 }
 
 CharInfo.propTypes = {
-    charId: PropTypes.number.isRequired
+    charId: PropTypes.number
 }
 
 CharInfo.defaultProps = {
