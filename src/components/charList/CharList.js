@@ -1,4 +1,4 @@
-import { Component } from 'react/cjs/react.production.min';
+import React, { Component } from 'react/cjs/react.production.min';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import MarvelService from '../../services/MarvelService';
@@ -15,9 +15,10 @@ class CharList extends Component {
         imgNotFound: 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg',
         newItemLoading: false,
         offset: 210,
-        charEnded: false
+        charEnded: false,
+        refs: []
     }
-
+    
     marvelService = new MarvelService();
     
     onError = () => {
@@ -28,9 +29,13 @@ class CharList extends Component {
 
     }
 
+    focusItem = (item) => {
+        this.state.refs.push(item);
+    }
 
-    componentDidMount = () => {
+    componentDidMount() {
         this.onRequest();
+
     }
 
     onRequest = (offset, limit) => {
@@ -55,10 +60,12 @@ class CharList extends Component {
             ended = true;
 
         } else {
-            newListChar = data.map(({id, thumbnail, name}) => (
+            newListChar = data.map(({id, thumbnail, name}, index) => (
                 <li key={id}
                     className="char__item"
-                    onClick={() => this.props.onCharSelected(id)}>
+                    tabIndex={this.state.list.length + 1 + index}
+                    ref={this.focusItem}
+                    onClick={(e) => this.props.onCharSelected(e, id, this.state.refs)}>
                         <img src={thumbnail} alt={name} style={thumbnail === this.state.imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}}/>
                         <div className="char__name">{name}</div>
                 </li>   

@@ -14,7 +14,14 @@ class App extends Component {
     }
 
 
-    onCharSelected = (id) => {
+    onCharSelected = (e, id, refs) => {
+        for (let item of refs) {
+            if (item.classList.contains('char__item_selected')) {
+                item.classList.remove('char__item_selected');
+                break;
+            }
+        }
+        refs[e.currentTarget.tabIndex - 1].classList.add('char__item_selected');
         this.setState({
             selectedChar: id
         })
