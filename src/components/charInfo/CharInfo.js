@@ -1,4 +1,4 @@
-import { Component } from 'react/cjs/react.production.min';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -6,80 +6,71 @@ import Skeleton from '../skeleton/Skeleton';
 import MarvelService from '../../services/MarvelService';
 import './charInfo.scss';
 
-class CharInfo extends Component {
+const CharInfo = (props) => {
     
-    state = { // поля классов, просто опускаем зис
-        char: '',
-        loading: false,
-        error: false,
-        imgNotFound: 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    }
+    const [char, setChar] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [imgNotFound, setImgNotFound] = useState('http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg');
 
-    marvelService = new MarvelService();
+    const marvelService = new MarvelService();
 
-    componentDidMount() {
-        this.updateChar();
-    }
+    useEffect(() => {
+        updateChar();
+    }, []) 
 
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true,
-        });
+
+    const onError = () => {
+        setLoading(false);
+        setError(false);
 
     }
 
-    onCharLoaded = (char) => {
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
 
-        this.setState({
-            char,
-            loading: false,
-        });
     }
 
-    onCharLoading = () => {
-        this.setState({
-            loading: true
-        })
+    const onCharLoading = () => {
+        setLoading(true);
     }
 
-    updateChar = () => {
-        const {charId} = this.props;
+    const updateChar = () => {
+        const {charId} = props;
 
         if (!charId) {
             return;
         }
 
-        this.onCharLoading();
+        onCharLoading();
 
-        this.marvelService
+        marvelService
             .getCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError);    
+            .then(onCharLoaded)
+            .catch(onError);    
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar();
-        }
-    }
 
-    render() {
-        const {char, loading, error, imgNotFound} = this.state;
-        const skeleton = char || loading || error ? false : <Skeleton/>;
-        const errorMessage = error ? <ErrorMessage/> : false;
-        const spinner = loading ? <Spinner/> : false
-        const content = !(loading || error || !char) ? <View char={char} imgNotFound={imgNotFound}/> : false
+    useEffect(() => {
+        updateChar();
+    }, [props.charId])
 
-        return (
-        <div className="char__info">
-            {skeleton}
-            {errorMessage}
-            {spinner}
-            {content}
-        </div>
+
+    const skeleton = char || loading || error ? false : <Skeleton/>;
+    const errorMessage = error ? <ErrorMessage/> : false;
+    const spinner = loading ? <Spinner/> : false
+    const content = !(loading || error || !char) ? <View char={char} imgNotFound={imgNotFound}/> : false
+
+    return (
+    <div className="char__info">
+        {skeleton}
+        {errorMessage}
+        {spinner}
+        {content}
+    </div>
     )
-    }
+
 }
 
 const View = ({char, imgNotFound}) => {
