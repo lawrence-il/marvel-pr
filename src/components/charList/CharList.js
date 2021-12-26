@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import './charList.scss';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -9,36 +9,23 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 const CharList = (props) => {
 
     const [list, setList] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [imgNotFound, setImgNotFound] = useState('http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg');
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const marvelService = new MarvelService();
+    const {loading, error, imgNotFound, getAllCharacters, clearError} = useMarvelService();
     
     const refs = useRef([]);
 
-    const onError = () => {
-        setError(true);
-        setLoading(false);
-
-    }
-
     useEffect(() => {
-        onRequest();
+        onRequest(offset,  true);
     }, [])
 
-    const onRequest = (offset, limit) => {
-        onCharListLoading();
-        marvelService.getAllCharacters(offset, limit)
-            .then(createElements)
-            .catch(onError);    
-    }
-
-    const onCharListLoading = () => {
-        setNewItemLoading(true);
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+        if (error) clearError();
+        getAllCharacters(offset)
+            .then(createElements)    
     }
 
     const createElements = (data) => {
@@ -61,8 +48,7 @@ const CharList = (props) => {
             ))
         }
         
-        setList(list => [...list, ...newListChar]);
-        setLoading(false);
+        setList(list => [...list, ...newListChar]); // list пред состояние newListChar
         setNewItemLoading(false);
         setOffset(offset => offset + 9);
         setCharEnded(ended);
@@ -70,15 +56,14 @@ const CharList = (props) => {
 
 
     const errorMessage = error ? <ErrorMessage/> : false;
-    const spinner = loading ? <Spinner/> : false;
-    const showList = !(loading || error) ? list : false;
+    const spinner = loading && !newItemLoading ? <Spinner/> : false;
 
     return (
         <div className="char__list">
             {errorMessage}
             {spinner}
             <ul className="char__grid">
-                {showList}
+                {error ? null : list}
             </ul>
             <button 
                 className="button button__main button__long"

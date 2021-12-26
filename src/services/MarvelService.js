@@ -1,29 +1,29 @@
+import useHttp from '../components/hooks/http.hook.js'
 
-class MarvelService {
-    _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-    _apiKey = 'apikey=e913ae028659ec126c204a2ab5b09eea';
-    _notFoundUrl = 'https://www.marvel.com/universe/404';
-    _baseOffset = 210;
-    _limit = 9;
 
-    getResource = async (url) => {
-        let res = await fetch(url);
+const  useMarvelService = () => {
 
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
-        return await res.json();
+    const {loading, request, error, clearError} = useHttp();
+
+    const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+    const _apiKey = 'apikey=e913ae028659ec126c204a2ab5b09eea';
+    const _notFoundUrl = 'https://www.marvel.com/universe/404';
+    const _baseOffset = 210;
+    const _limit = 9;
+    const imgNotFound  = 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg';
+
+
+    
+    const getAllCharacters = async (offset = _baseOffset, limit = _limit) => {
+        const res = await request(`${_apiBase}characters?limit=${limit}&offset=${offset}}&${_apiKey}`);
+        return res.data.results.map(_transformCharacter);
     }
-    getAllCharacters = async (offset = this._baseOffset, limit = this._limit) => {
-        const res = await this.getResource(`${this._apiBase}characters?limit=${limit}&offset=${offset}}&${this._apiKey}`);
-        return res.data.results.map(this._transformCharacter);
-    }
-    getCharacter = async (id) => {
-        const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apiKey}`);
-        return this._transformCharacter(res.data.results[0]) //
+    const getCharacter = async (id) => {
+        const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
+        return _transformCharacter(res.data.results[0]) //
     }
 
-    _transformCharacter = (char) => { // берутся необходимые данные 
+    const _transformCharacter = (char) => { // берутся необходимые данные 
         
         if(char.description.length >= 170) {
             char.description = `${char.description.slice(0, 170)}...`
@@ -36,12 +36,14 @@ class MarvelService {
                 name: char.name,
                 description: char.description,
                 thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
-                homepage: char.urls.filter(item => item.type === 'detail')[0] ? char.urls.filter(item => item.type === 'detail')[0].url : this._notFoundUrl,
-                wiki: char.urls.filter(item => item.type === 'wiki')[0] ? char.urls.filter(item => item.type === 'wiki')[0].url : this._notFoundUrl,
+                homepage: char.urls.filter(item => item.type === 'detail')[0] ? char.urls.filter(item => item.type === 'detail')[0].url : _notFoundUrl,
+                wiki: char.urls.filter(item => item.type === 'wiki')[0] ? char.urls.filter(item => item.type === 'wiki')[0].url : _notFoundUrl,
                 comics: char.comics.items
             })
         }
+
+        return {loading, error, getAllCharacters, getCharacter, imgNotFound, clearError}
     }
 
     
-export default MarvelService;
+export default useMarvelService;
