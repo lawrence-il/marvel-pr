@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import useMarvelService from '../../services/MarvelService';
-import './charList.scss';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import './charList.scss';
+
 
 
 const CharList = (props) => {
@@ -30,23 +31,22 @@ const CharList = (props) => {
 
     const createElements = (data) => {
         let ended = false;
-        let newListChar = [];
 
         if (data.length < 9) {
             ended = true;
 
-        } else {
-            newListChar = data.map(({id, thumbnail, name}, index) => (
-                <li key={id}
-                    className="char__item"
-                    tabIndex={list.length + 1 + index}
-                    ref={item => refs.current[list.length + index] = item}
-                    onClick={(e) => props.onCharSelected(e, id, refs)}>
-                        <img src={thumbnail} alt={name} style={thumbnail === imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}}/>
-                        <div className="char__name">{name}</div>
-                </li>   
-            ))
         }
+
+        const newListChar = data.map(({id, thumbnail, name}, index) => (
+            <li key={id}
+                className="char__item"
+                tabIndex={list.length + 1 + index}
+                ref={item => refs.current[list.length + index] = item}
+                onClick={(e) => props.onCharSelected(e, id, refs)}>
+                    <img src={thumbnail} alt={name} style={thumbnail === imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}}/>
+                    <div className="char__name">{name}</div>
+            </li>   
+        ))
         
         setList(list => [...list, ...newListChar]); // list пред состояние newListChar
         setNewItemLoading(false);
