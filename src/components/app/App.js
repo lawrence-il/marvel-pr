@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Switch} from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {MainPage, ComicsPage} from '../pages';
 import AppHeader from "../appHeader/AppHeader";
 
