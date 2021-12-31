@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect} from 'react';
 import Spinner from '../spinner/Spinner';
 import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -9,7 +9,7 @@ const ComicsList = () => {
 
     const [comicsList, setComicsList] = useState([]);
     const [newItemLoading, setNewItemLoading] = useState(false); // чтобы убрать проблемы со спинером
-    const [offset, setOffset] = useState(210);
+    const [offset, setOffset] = useState(230);
     const {loading, error, getComics} = useMarvelService();
     const [charEnded, setCharEnded] = useState(false);
     
