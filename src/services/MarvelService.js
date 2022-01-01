@@ -45,20 +45,28 @@ const  useMarvelService = () => {
 
     const getComics = async (offset = _baseOffset, limit = _limit) => {
         const res = await request(`${_apiBaseComics}comics?issueNumber=1&limit=${limit}&offset=${offset}&${_apiKey}`);
-        const comics = res.data.results.map(item => {
-            return ({
-                id: item.id,
-                title: item.title,
-                thumbnail: item.thumbnail.path + '.' + item.thumbnail.extension,
-                comicsUrl: item.urls.filter(item => item.type === 'detail')[0].url,
-                price: item.prices.filter(item => item.type === "printPrice")[0].price,
-            })
-        });
-
-        return comics 
+        return res.data.results.map(_transformComics);
     }
 
-        return {loading, error, getAllCharacters, getCharacter, imgNotFound, clearError, getComics}
+    const getComic = async (id) => {
+        const res = await request(`${_apiBaseComics}comics/${id}?${_apiKey}`);
+        return _transformComics(res.data.results[0]);
+    }
+
+    const _transformComics = (comics) => {
+        return ({
+            id: comics.id,
+            title: comics.title,
+            description: comics.description || 'There is no description',
+            pageCount: comics.pageCount ? `${comics.pageCount} p.` : 'No information about the number of pages',
+            thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
+            language: comics.textObjects.language || 'en-us',
+            comicsUrl: comics.urls.filter(item => item.type === 'detail')[0].url,
+            price: comics.prices.filter(item => item.type === "printPrice")[0].price,
+        })
+    }
+
+        return {loading, error, getAllCharacters, getCharacter, imgNotFound, clearError, getComics, getComic}
 }
 
     

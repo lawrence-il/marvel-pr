@@ -1,4 +1,6 @@
 import { useState, useEffect} from 'react';
+import { Link } from 'react-router-dom';
+
 import Spinner from '../spinner/Spinner';
 import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -30,15 +32,15 @@ const ComicsList = () => {
             ended = true;
 
         }
-        const newComicsList = data.map(({id, title, thumbnail, comicsUrl, price}, index) => (
+        const newComicsList = data.map(({id, title, thumbnail, price}, index) => ( // id иногда приходят одинаковые
             <li 
-                key={id + index}
+                key={comicsList.length + index}
                 className="comics__item">
-                    <a href={comicsUrl}>
+                    <Link to={`/comics/${id}`}>
                         <img src={thumbnail} alt={title} className="comics__item-img"/>
                         <div className="comics__item-name">{title}</div>
                         <div className="comics__item-price">{price}$</div>
-                    </a>
+                    </Link>
             </li>
         ))
         setComicsList(comicsList => [...comicsList, ...newComicsList]);
