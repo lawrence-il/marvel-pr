@@ -1,12 +1,16 @@
 import ErrorMessage from "../errorMessage/ErrorMessage";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const Page404 = () => {
+    const back = useHistory();
     return (
         <div>
             <ErrorMessage/>
             <p style={{'textAlign': 'center', 'fontWeight': 'bold', 'fontSize': '24px'}}>Page doesn't exist</p>
-            <Link style={{'display': 'block', 'textAlign': 'center', 'fontWeight': 'bold', 'fontSize': '24px', 'marginTop': '30px'}} to="/">Back to main page</Link>
+            <a style={{'display': 'block', 'textAlign': 'center', 'fontWeight': 'bold', 
+                        'fontSize': '24px', 'marginTop': '30px', 'cursor': 'pointer'}} 
+                        onClick={() => back.goBack()}
+                        >Back to main page</a>
         </div>
     )
 }

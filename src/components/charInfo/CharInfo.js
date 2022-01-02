@@ -54,6 +54,9 @@ const CharInfo = (props) => {
 
 const View = ({char, imgNotFound}) => {
     const {name, description, thumbnail, homepage, wiki, comics} = char
+
+    console.log(+comics[0]?.resourceURI.match(/\d\d+/))
+    
     return (
         <>
             <div className="char__basics">
@@ -83,7 +86,9 @@ const View = ({char, imgNotFound}) => {
                     comics.map((item, i) => { 
                         if (i >= 10) return;    // если много объектов лучше использовать обычный цикл с break
                         return (<li key={i} className="char__comics-item">
-                                <a href=' '>{item.name}</a>
+                                    <a href={`https://www.marvel.com/comics/issue/${+item?.resourceURI.match(/\d\d+/)}/${item.name.match(/\w+/)}`}
+                                        >{item.name}
+                                    </a>
                                 </li>)
                     })
                 }
