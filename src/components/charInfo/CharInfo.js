@@ -54,8 +54,6 @@ const CharInfo = (props) => {
 
 const View = ({char, imgNotFound}) => {
     const {name, description, thumbnail, homepage, wiki, comics} = char
-
-    console.log(+comics[0]?.resourceURI.match(/\d\d+/))
     
     return (
         <>
