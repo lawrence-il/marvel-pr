@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import useMarvelService from '../../services/MarvelService';
@@ -13,6 +14,7 @@ const CharList = (props) => {
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
+    const [showChar, setShowChar] = useState(false);
 
     const {loading, error, imgNotFound, getAllCharacters, clearError} = useMarvelService();
     
@@ -52,6 +54,7 @@ const CharList = (props) => {
         setNewItemLoading(false);
         setOffset(offset => offset + 9);
         setCharEnded(ended);
+        setShowChar(true);
     }
 
 
@@ -59,21 +62,26 @@ const CharList = (props) => {
     const spinner = loading && !newItemLoading ? <Spinner/> : false;
 
     return (
-        <div className="char__list">
-            {errorMessage}
-            {spinner}
-            <ul className="char__grid">
-                {error ? null : list}
-            </ul>
-            <button 
-                className="button button__main button__long"
-                disabled={newItemLoading}
-                style={{'display': charEnded ? 'none' : 'block'}}
-                onClick={() => onRequest(offset)}
-                >
-                <div className="inner">load more</div>
-            </button>
-        </div>
+        <CSSTransition
+            in={showChar}
+            timeout={400}
+            classNames='char__list'>
+            <div className="char__list">
+                {errorMessage}
+                {spinner}
+                <ul className="char__grid">
+                    {error ? null : list}
+                </ul>
+                <button 
+                    className="button button__main button__long"
+                    disabled={newItemLoading}
+                    style={{'display': charEnded ? 'none' : 'block'}}
+                    onClick={() => onRequest(offset)}
+                    >
+                    <div className="inner">load more</div>
+                </button>
+            </div>
+        </CSSTransition>
     )
     
 }

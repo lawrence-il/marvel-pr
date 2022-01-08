@@ -41,3 +41,17 @@
         color: #fff;
     }
 }
+.char__list-enter {
+    opacity: 0;
+}
+.char__list-enter-active {
+opacity: 1;
+transition: opacity 400ms;
+}
+.char__list-exit {
+opacity: 1;
+}
+.char__list-exit-active {
+opacity: 0;
+transition: opacity 400ms;
+}
