@@ -21,7 +21,12 @@ const  useMarvelService = () => {
     }
     const getCharacter = async (id) => {
         const res = await request(`${_apiBaseChar}characters/${id}?${_apiKey}`);
-        return _transformCharacter(res.data.results[0])
+        return _transformCharacter(res.data.results[0]);
+    }
+
+    const getCharByName = async (name) => {
+        const res = await request(`${_apiBaseChar}characters?name=${name}&${_apiKey}`);
+        return _transformCharacter(res.data.results[0]);
     }
 
     const _transformCharacter = (char) => { // берутся необходимые данные 
@@ -66,7 +71,7 @@ const  useMarvelService = () => {
         })
     }
 
-        return {loading, error, getAllCharacters, getCharacter, imgNotFound, clearError, getComics, getComic}
+        return {loading, error, getAllCharacters, getCharacter, getCharByName, imgNotFound, clearError, getComics, getComic}
 }
 
     
