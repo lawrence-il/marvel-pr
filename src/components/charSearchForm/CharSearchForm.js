@@ -5,17 +5,17 @@ import * as Yup from 'yup';
 import useMarvelService from '../../services/MarvelService';
 import './charSearchForm.scss';
 
-// button button__secondary
 
 const CharSearchForm = () => {
 
-    const {loading, error, getCharByName} = useMarvelService();
+    const {loading, error, getCharByName, clearError} = useMarvelService();
     const [charStatus, setCharStatus] = useState(false);
     const [charName, setCharName] = useState(false);
 
 
     useEffect(() => {
         if (charName) onRequest(charName);
+        if (error) clearError();
     }, [charName]);
 
     const onRequest = (value) => {
@@ -26,7 +26,7 @@ const CharSearchForm = () => {
 
     const foundChar = charStatus && !error && !loading ? <div className="char__wrapper-success">
                                     <div className="char__success">There is! Visit {charName} page?</div>
-                                    <Link className="button button__secondary" to={1}><div className="inner">Go page</div></Link>
+                                    <Link className="button button__secondary" to={`/character/${charName}`}><div className="inner">Go page</div></Link>
                                 </div> 
                                 : null;
                                 

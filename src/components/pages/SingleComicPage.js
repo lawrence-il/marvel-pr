@@ -9,39 +9,72 @@ import './singleComicPage.scss';
 const SingleComicPage = () => {
 
     const [comic, setComic] = useState(null);
-    const {comicId} = useParams();
-    const {loading, error, getComic, clearError} = useMarvelService();
+    const [char, setChar] = useState(null);
+    const {comicId, name} = useParams();
+    const {loading, error, getComic, getCharByName, clearError} = useMarvelService();
 
     useEffect(() => {
-        updateComic();
+        if(comicId) viewComic();
+        if(name) viewChar();
     }, [comicId])
 
-    const onComicLoaded = (comic) => {
+    const onComicLoaded = comic => {
         setComic(comic);
 
     }
 
-    const updateComic = () => {
-        if (error) clearError();
-        getComic(comicId)
-            .then(onComicLoaded)
- 
+    const onCharLoaded = char => {
+        setChar(char)
     }
 
-    const errorMessage = error ? <ErrorMessage/> : false;
-    const spinner = loading ? <Spinner/> : false
-    const content = !(loading || error || !comic) ? <View comic={comic}/> : false
+    const viewChar = () => {
+        if (error) clearError();
+        getCharByName(name)
+                .then(onCharLoaded)
+                .catch(() => setChar(null))
+    }
+
+    const viewComic = () => {
+        if (error) clearError();
+        getComic(comicId)
+                .then(onComicLoaded);
+
+    }
+
+    const errorMessage = error ? <ErrorMessage/> : null;
+    const spinner = loading ? <Spinner/> : null;
+    const contentComic = !(loading || error || !comic) ? <ViewComic comic={comic}/> : null;
+    const contentChar = !(loading || error || !char) ? <ViewChar char={char}/> : null;
 
     return (
         <>
             {errorMessage}
             {spinner}
-            {content}
+            {contentComic}
+            {contentChar}
         </>
     )
 }
 
-const View = ({comic}) => {
+
+const ViewChar = ({char}) => {
+
+    const {name, description, thumbnail} = char;
+
+    return (
+        <div className="single-comic">
+            <img src={thumbnail} alt={name} className="single-comic__img"/>
+            <div className="single-comic__info">
+                <h2 className="single-comic__name">{name}</h2>
+                <p className="single-comic__descr">{description}</p>
+            </div>
+            <Link to="/comics" className="single-comic__back">Back to all</Link>
+        </div>
+    )
+}
+
+
+const ViewComic = ({comic}) => {
 
     const {title, description, pageCount,thumbnail, language, price} = comic;
 
