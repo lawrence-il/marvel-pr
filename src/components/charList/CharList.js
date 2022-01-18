@@ -18,6 +18,7 @@ const CharList = (props) => {
 
     const {loading, error, imgNotFound, getAllCharacters, clearError} = useMarvelService();
     
+    const nodeRef = useRef(null)
     const refs = useRef([]);
 
     useEffect(() => {
@@ -65,8 +66,9 @@ const CharList = (props) => {
         <CSSTransition
             in={showChar}
             timeout={400}
-            classNames='char__list'>
-            <div className="char__list">
+            classNames='char__list'
+            nodeRef={nodeRef}>
+            <div className="char__list" ref={nodeRef}>
                 {errorMessage}
                 {spinner}
                 <ul className="char__grid">
