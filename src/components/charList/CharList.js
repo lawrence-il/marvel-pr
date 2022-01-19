@@ -51,7 +51,7 @@ const CharList = (props) => {
             </li>   
         ))
         
-        setList(list => [...list, ...newListChar]); // list пред состояние newListChar
+        setList(list => [...list, ...newListChar]); // list пред состояние
         setNewItemLoading(false);
         setOffset(offset => offset + 9);
         setCharEnded(ended);

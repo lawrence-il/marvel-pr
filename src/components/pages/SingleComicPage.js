@@ -16,7 +16,7 @@ const SingleComicPage = () => {
     useEffect(() => {
         if(comicId) viewComic();
         if(name) viewChar();
-    }, [comicId])
+    }, [])
 
     const onComicLoaded = comic => {
         setComic(comic);
