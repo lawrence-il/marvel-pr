@@ -13,7 +13,7 @@ const CharInfo = (props) => {
     const {loading, error, imgNotFound, getCharacter, clearError} = useMarvelService();
 
     useEffect(() => {
-        updateChar();
+        onLoadingChar();
     }, []) 
 
     const onCharLoaded = (char) => {
@@ -21,7 +21,7 @@ const CharInfo = (props) => {
 
     }
 
-    const updateChar = () => {
+    const onLoadingChar = () => {
         const {charId} = props;
         if (!charId) return;
 
@@ -32,7 +32,7 @@ const CharInfo = (props) => {
     }
 
     useEffect(() => {
-        updateChar();
+        onLoadingChar();
     }, [props.charId])
 
 
