@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import Skeleton from '../skeleton/Skeleton';
 import useMarvelService from '../../services/MarvelService';
+import setContent from '../../utils/setContent';
 import './charInfo.scss';
 
 const CharInfo = (props) => {
     
     const [char, setChar] = useState('');
 
-    const {loading, error, imgNotFound, getCharacter, clearError} = useMarvelService();
+    const {imgNotFound, getCharacter, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         onLoadingChar();
@@ -25,9 +23,10 @@ const CharInfo = (props) => {
         const {charId} = props;
         if (!charId) return;
 
-        if (error) clearError();
+        clearError();
         getCharacter(charId)
             .then(onCharLoaded)
+            .then(() => setProcess('confirmed'))
  
     }
 
@@ -36,24 +35,21 @@ const CharInfo = (props) => {
     }, [props.charId])
 
 
-    const skeleton = char || loading || error ? false : <Skeleton/>;
-    const errorMessage = error ? <ErrorMessage/> : false;
-    const spinner = loading ? <Spinner/> : false
-    const content = !(loading || error || !char) ? <View char={char} imgNotFound={imgNotFound}/> : false
+    // const skeleton = char || loading || error ? false : <Skeleton/>;
+    // const errorMessage = error ? <ErrorMessage/> : false;
+    // const spinner = loading ? <Spinner/> : false
+    // const content = !(loading || error || !char) ? <View char={char} imgNotFound={imgNotFound}/> : false
 
     return (
     <div className="char__info">
-        {skeleton}
-        {errorMessage}
-        {spinner}
-        {content}
+        {setContent(process, View, char, imgNotFound)}
     </div>
     )
 
 }
 
-const View = ({char, imgNotFound}) => {
-    const {name, description, thumbnail, homepage, wiki, comics} = char
+const View = ({data, imgNotFound}) => {
+    const {name, description, thumbnail, homepage, wiki, comics} = data
     
     return (
         <>
