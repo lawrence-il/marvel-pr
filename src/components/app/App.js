@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Switch} from "react-router-dom";
-import {SingleComicPage} from '../pages';
+import {SinglePage} from '../pages';
 import AppHeader from "../appHeader/AppHeader";
 import Spinner from "../spinner/Spinner";
 
@@ -26,10 +26,10 @@ const App = () => {
                                 <ComicsPage/>
                             </Route>
                             <Route exact path="/comics/:comicId">
-                                <SingleComicPage/>
+                                <SinglePage/>
                             </Route>
                             <Route exact path="/character/:name">
-                                <SingleComicPage/>
+                                <SinglePage/>
                             </Route>
                             <Route path='*'>
                                 <Page404/>

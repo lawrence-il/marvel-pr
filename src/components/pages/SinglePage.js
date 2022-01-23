@@ -1,66 +1,65 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import AppBanner from '../appBanner/AppBanner';
+import setContent from '../../utils/setContent';
 import useMarvelService from '../../services/MarvelService';
-import './singleComicPage.scss';
+import './singlePage.scss';
 
 const SingleComicPage = () => {
 
     const [comic, setComic] = useState(null);
     const [char, setChar] = useState(null);
     const {comicId, name} = useParams();
-    const {loading, error, getComic, getCharByName, clearError} = useMarvelService();
+    const {getComic, getCharByName, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         if(comicId) viewComic();
         if(name) viewChar();
-    }, [])
+    }, []);
 
     const onComicLoaded = comic => {
         setComic(comic);
 
-    }
+    };
 
     const onCharLoaded = char => {
-        setChar(char)
-    }
+        setChar(char);
+    };
 
     const viewChar = () => {
-        if (error) clearError();
+        clearError();
         getCharByName(name)
                 .then(onCharLoaded)
+                .then(() => setProcess('confirmed'))
                 .catch(() => setChar(null))
-    }
+    };
 
     const viewComic = () => {
-        if (error) clearError();
+        clearError();
         getComic(comicId)
-                .then(onComicLoaded);
+                .then(onComicLoaded)
+                .then(() => setProcess('confirmed'));
 
-    }
+    };
 
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading ? <Spinner/> : null;
-    const contentComic = !(loading || error || !comic) ? <ViewComic comic={comic}/> : null;
-    const contentChar = !(loading || error || !char) ? <ViewChar char={char}/> : null;
+    // const errorMessage = error ? <ErrorMessage/> : null;
+    // const spinner = loading ? <Spinner/> : null;
+    // const contentComic = !(loading || error || !comic) ? <ViewComic comic={comic}/> : null;
+    // const contentChar = !(loading || error || !char) ? <ViewChar char={char}/> : null;
 
     return (
         <>
-            {errorMessage}
-            {spinner}
-            {contentComic}
-            {contentChar}
+            <AppBanner/>
+            {setContent(process, comicId ? ViewComic : ViewChar, comicId ? comic : char)}
         </>
     )
 }
 
 
-const ViewChar = ({char}) => {
+const ViewChar = ({data}) => {
 
-    const {name, description, thumbnail} = char;
+    const {name, description, thumbnail} = data;
 
     return (
         <div className="single-comic">
@@ -71,20 +70,20 @@ const ViewChar = ({char}) => {
                     />
                 <title>{name}</title>
             </Helmet>
-            <img src={thumbnail} alt={name} className="single-comic__img"/>
+            <img src={thumbnail} alt={name} className="single-char__img"/>
             <div className="single-comic__info">
                 <h2 className="single-comic__name">{name}</h2>
                 <p className="single-comic__descr">{description}</p>
             </div>
-            <Link to="/comics" className="single-comic__back">Back to all</Link>
+            <Link to="/" className="single-comic__back">Back to all</Link>
         </div>
     )
 }
 
 
-const ViewComic = ({comic}) => {
+const ViewComic = ({data}) => {
 
-    const {title, description, pageCount,thumbnail, language, price} = comic;
+    const {title, description, pageCount,thumbnail, language, price} = data;
 
     return (
         <div className="single-comic">

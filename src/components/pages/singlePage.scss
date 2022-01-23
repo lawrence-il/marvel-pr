@@ -9,6 +9,7 @@
     &__img {
         width: 293px;
         height: 450px;
+        object-fit: cover;
     }
     &__name {
         font-weight: bold;
@@ -36,4 +37,9 @@
             color: $main-color;
         }
     }
+}
+.single-char__img {
+    width: 293px;
+    height: 293px;
+    object-fit: cover;
 }
