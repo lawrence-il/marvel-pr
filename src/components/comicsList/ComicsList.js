@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo} from 'react';
+import { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import Spinner from '../spinner/Spinner';
 import useMarvelService from '../../services/MarvelService';
@@ -64,13 +64,9 @@ const ComicsList = () => {
         
     };
 
-    const content = useMemo(() => {
-        return setContent(process, () => <ul className="comics__grid">{comicsList}</ul>, newItemLoading);
-    }, [process]);
-    
     return (
         <div className="comics__list">
-            {content}
+            {setContent(process, () => <ul className="comics__grid">{comicsList}</ul>, newItemLoading)}
             <button className="button button__main button__long" 
                 disabled={newItemLoading}
                 style={{'display': charEnded ? 'none' : 'block'}}
