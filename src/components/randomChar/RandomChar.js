@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
-
+import setContent from '../../utils/setContent';
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
@@ -11,17 +9,18 @@ const RandomChar = () => {
         
         const [char, setChar] = useState('');
 
-        const {loading, error, imgNotFound, getCharacter, clearError} = useMarvelService();
+        const {imgNotFound, getCharacter, clearError, process, setProcess} = useMarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
     }
 
     const updateChar = () => {
-        if (error) clearError();
+        clearError();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
         getCharacter(id)
-            .then(onCharLoaded) 
+            .then(onCharLoaded)
+            .then(() => setProcess('confirmed'));
 
     }
 
@@ -29,17 +28,10 @@ const RandomChar = () => {
     useEffect(() => {
         updateChar();
     }, []);
-
-
-    const errorMessage = error ? <ErrorMessage/> : false;
-    const spinner = loading ? <Spinner/> : false
-    const content = !(loading || error) ? <View char={char} imgNotFound={imgNotFound}/> : false
-    
+ 
     return (
         <div className="randomchar">
-            {errorMessage}
-            {spinner}
-            {content}
+            {setContent(process, View, char, imgNotFound)}
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br/>
@@ -57,8 +49,8 @@ const RandomChar = () => {
     )
 }
 
-const View = ({char, imgNotFound}) => {
-    const {name, description, thumbnail, homepage, wiki} = char;
+const View = ({data, imgNotFound}) => {
+    const {name, description, thumbnail, homepage, wiki} = data;
     return (
         <div className="randomchar__block">
             <img src={thumbnail} alt="Random character" style={thumbnail === imgNotFound ? {objectFit: 'fill'} : {objectFit: 'cover'}} className="randomchar__img"/>

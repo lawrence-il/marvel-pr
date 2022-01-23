@@ -76,7 +76,6 @@ const CharList = (props) => {
     };
 
     const content = useMemo(() => {
-        console.log(process);
         return setContent(process, () => <ul className="char__grid">{list}</ul>, newItemLoading);
     }, [process]);
 
