@@ -1,13 +1,10 @@
 import { useState, useCallback } from "react";
 
 const useHttp = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [process, setProcess] = useState('waiting');
 
     const request = useCallback(async (url, method = 'GET', body = null, headers = {'Content-Type': 'application/json'}) => {
 
-        setLoading(true);
         setProcess('loading');
 
         try {
@@ -18,22 +15,18 @@ const useHttp = () => {
             }
             const data = await response.json();
 
-            setLoading(false);
             return data
         } catch(e) {
-            setLoading(false);
-            setError(e.message);
             setProcess('error');
             throw e;
         }
     }, []);
 
     const clearError = useCallback(() => {
-        setError(false);
         setProcess('loading');
     }, []);
 
-    return {loading, request, error, clearError, process, setProcess}
+    return {request, clearError, process, setProcess}
 
 }
 

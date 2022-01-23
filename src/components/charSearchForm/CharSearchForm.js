@@ -1,40 +1,57 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage} from "formik";
+import { Formik, Form, Field, ErrorMessage as FormikErMessage} from "formik";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 import * as Yup from 'yup';
 import useMarvelService from '../../services/MarvelService';
 import './charSearchForm.scss';
 
+const setContent = (process, Component) => {
+    switch (process) {
+        case 'waiting':
+            return null;
+        case 'loading':
+            return null;
+        case 'confirmed':
+            return <Component />;
+        case 'not found':
+            return <Component />;
+        case 'error':
+            return <ErrorMessage />;
+        default:
+            throw new Error('Unexpected process state');
+    }
+}
 
 const CharSearchForm = () => {
 
-    const {loading, error, getCharByName, clearError} = useMarvelService();
-    const [charStatus, setCharStatus] = useState(false);
+    const {getCharByName, process, setProcess} = useMarvelService();
     const [charName, setCharName] = useState(false);
 
 
     useEffect(() => {
         if (charName) onRequest(charName);
-        if (error) clearError();
     }, [charName]);
 
     const onRequest = (value) => {
         getCharByName(value)
-                .then(() => setCharStatus(true))
-                .catch(() => setCharStatus(false))
+                .then(() => setProcess('confirmed'))
+                .catch(() => setProcess('not found'))
     };
 
-    const foundChar = charStatus && !error && !loading ? <div className="char__wrapper-success">
-                                    <div className="char__success">There is! Visit {charName} page?</div>
-                                    <Link className="button button__secondary" to={`/character/${charName}`}><div className="inner">Go page</div></Link>
-                                </div> 
-                                : null;
+    const foundChar = process === 'confirmed' ? 
+                            <div className="char__wrapper-success">
+                                <div className="char__success">There is! Visit {charName} page?</div>
+                                <Link className="button button__secondary" to={`/character/${charName}`}><div className="inner">Go page</div></Link>
+                            </div> 
+                            : null;
                                 
-    const notFoundChar = !charStatus && !error && charName && !loading ? (
-            <div className="char__error">
-                The character was not found. Check the name and try again
-            </div>)  : null;
-    
+    const notFoundChar =  process === 'not found' ? 
+                            <div className="char__error">
+                                The character was not found. Check the name and try again
+                            </div>  
+                            : null;
+                            
     return (
         <Formik
             initialValues={
@@ -55,12 +72,11 @@ const CharSearchForm = () => {
                 <button 
                     type='submit' 
                     className="button button__main"
-                    disabled={loading}>
+                    disabled={process === 'loading'}>
                     <div className="inner">Find</div>
                 </button>
-                <ErrorMessage className="char__error" name='character' component='div'/>
-                {foundChar}
-                {notFoundChar}
+                <FormikErMessage className="char__error" name='character' component='div'/>
+                {setContent(process, () => foundChar || notFoundChar)}
             </Form>
         </Formik>
     )

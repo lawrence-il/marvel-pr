@@ -34,12 +34,6 @@ const CharInfo = (props) => {
         onLoadingChar();
     }, [props.charId])
 
-
-    // const skeleton = char || loading || error ? false : <Skeleton/>;
-    // const errorMessage = error ? <ErrorMessage/> : false;
-    // const spinner = loading ? <Spinner/> : false
-    // const content = !(loading || error || !char) ? <View char={char} imgNotFound={imgNotFound}/> : false
-
     return (
     <div className="char__info">
         {setContent(process, View, char, imgNotFound)}
