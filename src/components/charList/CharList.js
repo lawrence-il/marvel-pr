@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
@@ -6,6 +6,22 @@ import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import './charList.scss';
 
+
+
+const setContent = (process, Component, newItemLoading, ) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner/>;
+        case 'loading':
+            return newItemLoading ? <Component/> : <Spinner/>;
+        case 'confirmed':
+            return <Component/>;
+        case 'error':
+            return <ErrorMessage/>;
+        default:
+            throw new Error('Unexpected process state');
+    }
+};
 
 
 const CharList = (props) => {
@@ -16,21 +32,22 @@ const CharList = (props) => {
     const [charEnded, setCharEnded] = useState(false);
     const [showChar, setShowChar] = useState(false);
 
-    const {loading, error, imgNotFound, getAllCharacters, clearError} = useMarvelService();
+    const {imgNotFound, getAllCharacters, clearError, process, setProcess} = useMarvelService();
     
     const nodeRef = useRef(null)
     const refs = useRef([]);
 
     useEffect(() => {
-        onRequest(offset,  true);
-    }, [])
+        onRequest(offset);
+    }, []);
 
-    const onRequest = (offset, initial) => {
-        initial ? setNewItemLoading(false) : setNewItemLoading(true);
-        if (error) clearError();
+    const onRequest = (offset, initial = false) => {
+        initial ? setNewItemLoading(true) : setNewItemLoading(false);
+        clearError();
         getAllCharacters(offset)
-            .then(createElements)    
-    }
+            .then(createElements)
+            .then(() => setProcess('confirmed'));  
+    };
 
     const createElements = (data) => {
         let ended = false;
@@ -56,11 +73,12 @@ const CharList = (props) => {
         setOffset(offset => offset + 9);
         setCharEnded(ended);
         setShowChar(true);
-    }
+    };
 
-
-    const errorMessage = error ? <ErrorMessage/> : false;
-    const spinner = loading && !newItemLoading ? <Spinner/> : false;
+    const content = useMemo(() => {
+        console.log(process);
+        return setContent(process, () => <ul className="char__grid">{list}</ul>, newItemLoading);
+    }, [process]);
 
     return (
         <CSSTransition
@@ -69,16 +87,12 @@ const CharList = (props) => {
             classNames='char__list'
             nodeRef={nodeRef}>
             <div className="char__list" ref={nodeRef}>
-                {errorMessage}
-                {spinner}
-                <ul className="char__grid">
-                    {error ? null : list}
-                </ul>
+                {content}
                 <button 
                     className="button button__main button__long"
                     disabled={newItemLoading}
                     style={{'display': charEnded ? 'none' : 'block'}}
-                    onClick={() => onRequest(offset)}
+                    onClick={() => onRequest(offset, true)}
                     >
                     <div className="inner">load more</div>
                 </button>
