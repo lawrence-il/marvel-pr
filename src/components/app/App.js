@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch} from "react-router-dom";
 import {SinglePage} from '../pages';
 import AppHeader from "../appHeader/AppHeader";
 import Spinner from "../spinner/Spinner";
+import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 const Page404 = lazy(() => import('../pages/404'));
 const MainPage = lazy(() => import('../pages/MainPage'));
@@ -23,10 +24,10 @@ const App = () => {
                                 <MainPage/>
                             </Route>
                             <Route exact path="/comics">
-                                <ComicsPage/>
+                                <ErrorBoundary><ComicsPage/></ErrorBoundary>
                             </Route>
                             <Route exact path="/comics/:comicId">
-                                <SinglePage/>
+                                <ErrorBoundary><SinglePage/></ErrorBoundary>
                             </Route>
                             <Route exact path="/character/:name">
                                 <SinglePage/>

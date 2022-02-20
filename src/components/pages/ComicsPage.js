@@ -1,11 +1,11 @@
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 import AppBanner from '../appBanner/AppBanner';
 import ComicsList from '../comicsList/ComicsList';
 
 const ComicsPage = () => {
     return (
-        <>
+        <HelmetProvider>
             <Helmet>
                 <meta
                     name="description"
@@ -17,7 +17,7 @@ const ComicsPage = () => {
             <ErrorBoundary>
                 <ComicsList/>
             </ErrorBoundary>
-        </>
+        </HelmetProvider>
     )
 }
 export default ComicsPage;
